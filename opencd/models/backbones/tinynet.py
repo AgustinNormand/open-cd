@@ -412,7 +412,7 @@ class TinyNet(BaseModule):
         self.in_channels = make_divisible(16 * widen_factor, 8)
 
         self.conv1 = ConvModule(
-            in_channels=3,
+            in_channels=4,
             out_channels=self.in_channels,
             kernel_size=3,
             stride=2,
