@@ -218,6 +218,7 @@ class DualInputSegDataPreProcessor(BaseDataPreprocessor):
 
         inputs = [_input.float() for _input in inputs]
         if self._enable_normalize:
+            print(inputs[0].shape)
             inputs = [(_input - self.mean) / self.std for _input in inputs]
 
         if training:
