@@ -11,7 +11,7 @@ class CHACO_CD_Dataset(BaseCDDataset):
         palette=[[0, 0, 0], [255, 255, 255]])
 
     def __init__(self,
-                 img_suffix='.png',
+                 img_suffix='.tif',
                  seg_map_suffix='.png',
                  format_seg_map='to_binary',
                  **kwargs) -> None:
