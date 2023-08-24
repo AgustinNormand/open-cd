@@ -211,6 +211,7 @@ class DualInputSegDataPreProcessor(BaseDataPreprocessor):
         """
         data = self.cast_data(data)  # type: ignore
         inputs = data['inputs']
+        #print(inputs[0].shape)
         data_samples = data.get('data_samples', None)
         # TODO: whether normalize should be after stack_batch
         if self.channel_conversion and inputs[0].size(0) == 6:
@@ -218,7 +219,7 @@ class DualInputSegDataPreProcessor(BaseDataPreprocessor):
 
         inputs = [_input.float() for _input in inputs]
         if self._enable_normalize:
-            print(inputs[0].shape)
+            #print(inputs[0].shape)
             inputs = [(_input - self.mean) / self.std for _input in inputs]
 
         if training:

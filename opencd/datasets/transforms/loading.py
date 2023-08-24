@@ -55,9 +55,12 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                         filename, backend_args=self.backend_args)
                 img = mmcv.imfrombytes(
                 img_bytes, flag=self.color_type, backend=self.imdecode_backend)
+                #print(self.imdecode_backend)
+                #print(self.color_type)
                 if self.to_float32:
                     img = img.astype(np.float32)
                 imgs.append(img)
+                #print(f"Shape de las imágenes {img.shape}")
         except Exception as e:
             if self.ignore_empty:
                 return None
@@ -67,6 +70,9 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
         results['img'] = imgs
         results['img_shape'] = imgs[0].shape[:2]
         results['ori_shape'] = imgs[0].shape[:2]
+        #print(results["img"][0].shape)
+        #print(results['img_shape'])
+        #print(results['ori_shape'])
         return results
 
 
