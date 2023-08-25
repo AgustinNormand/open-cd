@@ -1,4 +1,5 @@
 # Copyright (c) Open-CD. All rights reserved.
+import sys
 import warnings
 from typing import Dict, Optional, Union
 
@@ -63,10 +64,18 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                 return None
             else:
                 raise e
-        
+        img = imgs[0]
+        print(f"Len imgs: {len(img)}")
+        print(f"Type {type(img)}")
+        print(f"Shape {img.shape}")
+        print(img)
+        print(f"Mean Brand 0 {np.mean(img[0])}")
+        print(f"Mean Brand 1 {np.mean(img[1])}")
+        print(f"Mean Brand 2 {np.mean(img[2])}")
         results['img'] = imgs
         results['img_shape'] = imgs[0].shape[:2]
         results['ori_shape'] = imgs[0].shape[:2]
+        sys.exit(0)
         return results
 
 
