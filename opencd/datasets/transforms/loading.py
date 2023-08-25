@@ -43,6 +43,13 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
             dict: The dict contains loaded image and meta information.
         """
 
+        #print(f"Results: {results}")
+        #print(f"Float 32? {self.to_float32}")
+        #print(f"File Client Args: {self.file_client_args}")
+        #print(f"Backend Args: {self.backend_args}")
+        #print(f"Color Type {self.color_type}")
+        #print(f"Imdecode Backend {self.imdecode_backend}")
+
         filenames = results['img_path']
         imgs = []
         try:
@@ -58,24 +65,23 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                 img_bytes, flag=self.color_type, backend=self.imdecode_backend)
                 if self.to_float32:
                     img = img.astype(np.float32)
+
+                # Normalize 3 bands
+                mean = [np.mean(img[0]), np.mean(img[1]), np.mean(img[2])]
+                std = [np.std(img[0]), np.std(img[1]), np.std(img[2])]
+                img = (img - mean) / std
+                # End Normalize 3 bands
+
                 imgs.append(img)
         except Exception as e:
             if self.ignore_empty:
                 return None
             else:
                 raise e
-        img = imgs[0]
-        print(f"Len imgs: {len(img)}")
-        print(f"Type {type(img)}")
-        print(f"Shape {img.shape}")
-        print(img)
-        print(f"Mean Brand 0 {np.mean(img[0])}")
-        print(f"Mean Brand 1 {np.mean(img[1])}")
-        print(f"Mean Brand 2 {np.mean(img[2])}")
         results['img'] = imgs
         results['img_shape'] = imgs[0].shape[:2]
         results['ori_shape'] = imgs[0].shape[:2]
-        sys.exit(0)
+
         return results
 
 
