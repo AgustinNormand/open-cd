@@ -700,10 +700,10 @@ class MultiImgPhotoMetricDistortion(BaseTransform):
                 img = self.contrast(img)
 
             # random saturation
-            img = self.saturation(img)
+            #img = self.saturation(img)
 
             # random hue
-            img = self.hue(img)
+            #img = self.hue(img)
 
             # random contrast
             if mode == 0:
