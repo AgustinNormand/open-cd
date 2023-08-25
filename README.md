@@ -78,7 +78,7 @@ pip install -v -e .
 
 train
 ```
-python tools/train.py configs/changer/changer_ex_r18_512x512_40k_levircd.py --work-dir ./changer_r18_levir_workdir
+python tools/train.py configs/tinycd/tinycd_256x256_40k_chaco.py --work-dir ./tinycd_chaco_workdir
 ```
 infer
 ```
