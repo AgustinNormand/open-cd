@@ -61,8 +61,6 @@ Please refer to [get_started.md](https://github.com/open-mmlab/mmsegmentation/bl
 ```
 git clone git@github.com:AgustinNormand/open-cd.git
 cd open-cd
-pip install -v -e .
-
 git checkout dev-1.x-4TIF-1PNG
 ```
 
@@ -75,7 +73,7 @@ mim install "mmpretrain>=1.0.0rc6"
 pip install "mmsegmentation>=1.0.0rc6, <1.1.0."
 pip install "mmdet>=3.0.0rc6, <3.1.0"
 
-!pip install -v -e .
+pip install -v -e .
 ```
 
 train
