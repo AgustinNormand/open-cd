@@ -57,20 +57,27 @@ Supported datasets: | [Descriptions](https://github.com/wenhwu/awesome-remote-se
 Please refer to [get_started.md](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/get_started.md#installation) in mmseg.
 
 #### simple usage
+
+```
+git clone git@github.com:AgustinNormand/open-cd.git
+cd open-cd
+pip install -v -e .
+
+git checkout dev-1.x-4TIF-1PNG
+```
+
 ```
 # Install OpenMMLab Toolkits as Python packages
 pip install -U openmim
 mim install mmengine
 mim install "mmcv>=2.0.0"
-mim install "mmpretrain>=1.0.0rc7"
-pip install "mmsegmentation>=1.0.0"
-pip install "mmdet>=3.0.0"
+mim install "mmpretrain>=1.0.0rc6"
+pip install "mmsegmentation>=1.0.0rc6, <1.1.0."
+pip install "mmdet>=3.0.0rc6, <3.1.0"
+
+!pip install -v -e .
 ```
-```
-git clone https://github.com/likyoo/open-cd.git
-cd open-cd
-pip install -v -e .
-```
+
 train
 ```
 python tools/train.py configs/changer/changer_ex_r18_512x512_40k_levircd.py --work-dir ./changer_r18_levir_workdir
