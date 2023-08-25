@@ -7,7 +7,7 @@ Forked repo https://github.com/likyoo/open-cd/
 ```
 git clone git@github.com:AgustinNormand/open-cd.git
 cd open-cd
-git checkout dev-1.x-4TIF-1PNG
+git checkout dev-1.x-3PNG-1PNG
 ```
 
 ```
