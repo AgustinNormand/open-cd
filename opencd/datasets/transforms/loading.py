@@ -33,30 +33,31 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
          super().__init__(**kwargs)
          self.calculated_means = {}
          self.calculated_std = {}
+         self.imgs = []
 
-    def transform(self, results: dict) -> Optional[dict]:
+    def load_images(self, results: dict) -> Optional[dict]:
         """Functions to load image.
 
-        Args:
-            results (dict): Result dict from
-                :class:`mmengine.dataset.BaseDataset`.
+                Args:
+                    results (dict): Result dict from
+                        :class:`mmengine.dataset.BaseDataset`.
 
-        Returns:
-            dict: The dict contains loaded image and meta information.
-        """
+                Returns:
+                    dict: The dict contains loaded image and meta information.
+                """
 
-        #print(f"Results: {results}")
-        #print(f"Float 32? {self.to_float32}")
-        #print(f"File Client Args: {self.file_client_args}")
-        #print(f"Backend Args: {self.backend_args}")
-        #print(f"Color Type {self.color_type}")
-        #print(f"Imdecode Backend {self.imdecode_backend}")
+        # print(f"Results: {results}")
+        # print(f"Float 32? {self.to_float32}")
+        # print(f"File Client Args: {self.file_client_args}")
+        # print(f"Backend Args: {self.backend_args}")
+        # print(f"Color Type {self.color_type}")
+        # print(f"Imdecode Backend {self.imdecode_backend}")
 
         filenames = results['img_path']
         imgs = []
         try:
             for filename in filenames:
-                #print(f"Processing {filename}")
+                # print(f"Processing {filename}")
                 if self.file_client_args is not None:
                     file_client = fileio.FileClient.infer_client(
                         self.file_client_args, filename)
@@ -65,11 +66,11 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                     img_bytes = fileio.get(
                         filename, backend_args=self.backend_args)
                 img = mmcv.imfrombytes(
-                img_bytes, flag=self.color_type, backend=self.imdecode_backend)
+                    img_bytes, flag=self.color_type, backend=self.imdecode_backend)
                 if self.to_float32:
                     img = img.astype(np.float32)
 
-                #print(self.calculated_means)
+                # print(self.calculated_means)
 
                 # Normalize 3 bands
                 if filename not in self.calculated_means.keys():
@@ -102,6 +103,10 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
 
         return results
 
+    def transform(self, results: dict) -> Optional[dict]:
+        if self.imgs == []:
+            self.load_images(results)
+        return self.imgs
 
 @TRANSFORMS.register_module()
 class MultiImgLoadAnnotations(MMCV_LoadAnnotations):
