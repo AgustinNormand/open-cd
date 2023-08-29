@@ -54,6 +54,7 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
         imgs = []
         try:
             for filename in filenames:
+                #print(f"Processing {filename}")
                 if self.file_client_args is not None:
                     file_client = fileio.FileClient.infer_client(
                         self.file_client_args, filename)
@@ -67,9 +68,16 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                     img = img.astype(np.float32)
 
                 # Normalize 3 bands
-                mean = [np.mean(img[0]), np.mean(img[1]), np.mean(img[2])]
-                std = [np.std(img[0]), np.std(img[1]), np.std(img[2])]
-                img = (img - mean) / std
+                for i in range(3):
+                    mean = np.mean(img[i])
+                    std = np.std(img[i])
+                    if std != 0:
+                        img[i] = (img[i] - mean) / std
+                    else:
+                        print("Standard Desviation in 0")
+                #mean = [np.mean(img[0]), np.mean(img[1]), np.mean(img[2])]
+                #std = [np.std(img[0]), np.std(img[1]), np.std(img[2])]
+                #img = (img - mean) / std
                 # End Normalize 3 bands
 
                 imgs.append(img)
