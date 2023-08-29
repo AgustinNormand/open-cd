@@ -31,6 +31,8 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
 
     def __init__(self, **kwargs) -> None:
          super().__init__(**kwargs)
+         self.calculated_means = {}
+         self.calculated_std = {}
 
     def transform(self, results: dict) -> Optional[dict]:
         """Functions to load image.
@@ -67,16 +69,25 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                 if self.to_float32:
                     img = img.astype(np.float32)
 
-                # Normalize 3 bands
-                #mean = []
-                #std = []
-                #for i in range(3):
-                #    band_i = img[:, :, i]
-                #    band_i = np.where(band_i == 0, np.nan, band_i)
-                #    mean.append(np.nanmean(band_i))
-                #    std.append(np.nanstd(band_i))
+                print(self.calculated_means)
 
-                #img = (img - mean) / std
+                # Normalize 3 bands
+                if filename not in self.calculated_means.keys():
+                    mean = []
+                    std = []
+                    for i in range(3):
+                        band_i = img[:, :, i]
+                        band_i = np.where(band_i == 0, np.nan, band_i)
+                        mean.append(np.nanmean(band_i))
+                        std.append(np.nanstd(band_i))
+
+                    self.calculated_means[filename] = mean
+                    self.calculated_std[filename] = std
+                else:
+                    mean = self.calculated_means[filename]
+                    std = self.calculated_std[filename]
+
+                img = (img - mean) / std
                 # End Normalize 3 bands
 
                 imgs.append(img)
