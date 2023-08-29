@@ -69,7 +69,7 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                 if self.to_float32:
                     img = img.astype(np.float32)
 
-                print(self.calculated_means)
+                #print(self.calculated_means)
 
                 # Normalize 3 bands
                 if filename not in self.calculated_means.keys():
