@@ -33,65 +33,70 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
          super().__init__(**kwargs)
          self.calculated_means = {}
          self.calculated_std = {}
-         self.imgs = []
+         self.normalized_images = {}
 
-    def load_images(self, results: dict) -> Optional[dict]:
+    def transform(self, results: dict) -> Optional[dict]:
         """Functions to load image.
 
-                Args:
-                    results (dict): Result dict from
-                        :class:`mmengine.dataset.BaseDataset`.
+        Args:
+            results (dict): Result dict from
+                :class:`mmengine.dataset.BaseDataset`.
 
-                Returns:
-                    dict: The dict contains loaded image and meta information.
-                """
+        Returns:
+            dict: The dict contains loaded image and meta information.
+        """
 
-        # print(f"Results: {results}")
-        # print(f"Float 32? {self.to_float32}")
-        # print(f"File Client Args: {self.file_client_args}")
-        # print(f"Backend Args: {self.backend_args}")
-        # print(f"Color Type {self.color_type}")
-        # print(f"Imdecode Backend {self.imdecode_backend}")
+        #print(f"Results: {results}")
+        #print(f"Float 32? {self.to_float32}")
+        #print(f"File Client Args: {self.file_client_args}")
+        #print(f"Backend Args: {self.backend_args}")
+        #print(f"Color Type {self.color_type}")
+        #print(f"Imdecode Backend {self.imdecode_backend}")
 
         filenames = results['img_path']
         imgs = []
         try:
             for filename in filenames:
-                # print(f"Processing {filename}")
-                if self.file_client_args is not None:
-                    file_client = fileio.FileClient.infer_client(
-                        self.file_client_args, filename)
-                    img_bytes = file_client.get(filename)
-                else:
-                    img_bytes = fileio.get(
-                        filename, backend_args=self.backend_args)
-                img = mmcv.imfrombytes(
+                if filename not in self.normalized_images.keys():
+                    #print(f"Processing {filename}")
+                    if self.file_client_args is not None:
+                        file_client = fileio.FileClient.infer_client(
+                            self.file_client_args, filename)
+                        img_bytes = file_client.get(filename)
+                    else:
+                        img_bytes = fileio.get(
+                            filename, backend_args=self.backend_args)
+                    img = mmcv.imfrombytes(
                     img_bytes, flag=self.color_type, backend=self.imdecode_backend)
-                if self.to_float32:
-                    img = img.astype(np.float32)
+                    if self.to_float32:
+                        img = img.astype(np.float32)
 
-                # print(self.calculated_means)
+                    #print(self.calculated_means)
 
-                # Normalize 3 bands
-                if filename not in self.calculated_means.keys():
-                    mean = []
-                    std = []
-                    for i in range(3):
-                        band_i = img[:, :, i]
-                        band_i = np.where(band_i == 0, np.nan, band_i)
-                        mean.append(np.nanmean(band_i))
-                        std.append(np.nanstd(band_i))
+                    # Normalize 3 bands
+                    if filename not in self.calculated_means.keys():
+                        mean = []
+                        std = []
+                        for i in range(3):
+                            band_i = img[:, :, i]
+                            band_i = np.where(band_i == 0, np.nan, band_i)
+                            mean.append(np.nanmean(band_i))
+                            std.append(np.nanstd(band_i))
 
-                    self.calculated_means[filename] = mean
-                    self.calculated_std[filename] = std
+                        self.calculated_means[filename] = mean
+                        self.calculated_std[filename] = std
+                    else:
+                        mean = self.calculated_means[filename]
+                        std = self.calculated_std[filename]
+
+                    img = (img - mean) / std
+                    # End Normalize 3 bands
+
+                    imgs.append(img)
+                    self.normalized_images[filename] = img
                 else:
-                    mean = self.calculated_means[filename]
-                    std = self.calculated_std[filename]
+                    imgs.append(self.normalized_images[filename])
 
-                img = (img - mean) / std
-                # End Normalize 3 bands
-
-                imgs.append(img)
         except Exception as e:
             if self.ignore_empty:
                 return None
@@ -103,10 +108,6 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
 
         return results
 
-    def transform(self, results: dict) -> Optional[dict]:
-        if self.imgs == []:
-            self.load_images(results)
-        return self.imgs
 
 @TRANSFORMS.register_module()
 class MultiImgLoadAnnotations(MMCV_LoadAnnotations):
