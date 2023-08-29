@@ -68,16 +68,15 @@ class MultiImgLoadImageFromFile(MMCV_LoadImageFromFile):
                     img = img.astype(np.float32)
 
                 # Normalize 3 bands
+                mean = []
+                std = []
                 for i in range(3):
-                    mean = np.mean(img[i])
-                    std = np.std(img[i])
-                    if std != 0:
-                        img[i] = (img[i] - mean) / std
-                    else:
-                        print(f"Mean: {mean}, Std: {std}, Filename: {filename}, Band: {i}")
-                #mean = [np.mean(img[0]), np.mean(img[1]), np.mean(img[2])]
-                #std = [np.std(img[0]), np.std(img[1]), np.std(img[2])]
-                #img = (img - mean) / std
+                    band_i = img[:, :, i]
+                    band_i = np.where(band_i == 0, np.nan, band_i)
+                    mean.append(np.nanmean(band_i))
+                    std.append(np.nanstd(band_i))
+
+                img = (img - mean) / std
                 # End Normalize 3 bands
 
                 imgs.append(img)
